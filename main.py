@@ -1,8 +1,8 @@
 # dictionnaire des couleurs
 
-couleur = {
-    '@' : ('b')
-    
+color = {
+    '@' : (1,2,3)
+
 }
 
 
