@@ -10,11 +10,6 @@ import re
 
         
 
-def move_perso(deplacement, pos_x, pos_y, map_list, pers = perso):
-    pos = (pos_x, pos_y)
-    new_pos = (pos[0] + deplacement[0], pos[1] + deplacement[1])
-    if map_list[new_pos[1], new_pos[1]] == '.' or '+' or '#':
-        pers['x'], pers['y'] = new_pos[0], new_pos[1]
 
 # pg.init()
 
@@ -26,75 +21,95 @@ def move_perso(deplacement, pos_x, pos_y, map_list, pers = perso):
 #             map_liste.append(list(ligne.strip()))
 #     return map_liste
 
-class Perso:
-    '''
-    A class to represent the person
-    '''
-    def __init__(self, perso_x=0, perso_y=0, direction=(0,-1),objects={}, 
-                pdv=20, puissance=1): #initial direction UP
 
-        self._perso_x = perso_x
-        self._perso_y = perso_y
-        self._direction = direction
-        self._objects = objects
-        self._pdv = pdv
-        self._puissance = puissance
         
 
-    def getPersoX(self):
-        return self._perso_x
-    
-    def getPersoY(self):
-        return self._perso_y
-    
-    def getDirection(self):
-        return self._direction
+pg.init()
 
-    def reDefPosition(self,p): #p is a tuple representing the position
-        self._ant_x = p[0]
-        self._ant_y = p[1]
-    
-    def newDirection(self,d):
-        self._direction=d
+# initialisation du grid
+def lecture_fichier(enter_file='map/map1.txt'):
+    '''lit le fichier et le met dans une liste '''
+    map_liste = []
+    with open(enter_file, 'r') as f : 
+        for ligne in f :
+            map_liste.append(list(ligne))
+    return map_liste
+
+################### fonctions draw ###########################
+
+def draw_perso(pers):
+    rect = pg.Rect(perso['y'] * pixel + 1,
+    perso['x'] * pixel + 1,
+    pixel - 2, pixel - 2)
+    pg.draw.rect(screen, (255, 0, 255), rect)
+
+def draw_point(pos_x, pos_y):
+    rect = pg.Rect(pos_y * pixel + 1,
+    pos_x * pixel + 1,
+    pixel - 2, pixel - 2)
+    pg.draw.rect(screen, (199, 208, 0), rect)
+
+def draw_h(pos_x, pos_y):
+    rect = pg.Rect(pos_y * pixel + 1,
+    pos_x * pixel + 1,
+    pixel - 2, pixel - 2)
+    pg.draw.rect(screen, (179, 177, 145), rect)
+
+def draw_plus(pos_x, pos_y):
+    rect = pg.Rect(pos_y * pixel + 1,
+    pos_x * pixel + 1,
+    pixel - 2, pixel - 2)
+    pg.draw.rect(screen, (158, 253, 56), rect)
+
+def draw_alpha(pos_x, pos_y):
+    rect = pg.Rect(pos_y * pixel + 1,
+    pos_x * pixel + 1,
+    pixel - 2, pixel - 2)
+    pg.draw.rect(screen, (255, 0, 127), rect)
+
+
+def move_perso(deplacement, map_list, pers):
+    pos = (pers['x'], pers['y'])
+    new_pos = (pos[0] + deplacement[0], pos[1] + deplacement[1])
+    if map_list[new_pos[0]][new_pos[1]] in ['.', '+', '#']:
+        pers['x'], pers['y'] = new_pos[0], new_pos[1]
+        if map_list[pos[0]][pos[1]] == '.':
+            draw_point(*pos)
+            draw_perso(perso)
+        elif map_list[pos[0]][pos[1]] == '#':
+            draw_h(*pos)  
+            draw_perso(perso)   
+        elif map_list[pos[0]][pos[1]] == '+':
+            draw_plus(*pos)  
+            draw_perso(perso)    
+        elif map_list[pos[0]][pos[1]] == '@':
+            draw_alpha(*pos)
+            draw_perso(perso) 
+
         
-    def movePersoForward(self):
-        '''
-        Moves the ant in the current direction by changing the value of the ant's position
-        '''
-        self._perso_x = self._perso_x + self._direction[0]
-        self._perso_y = self._perso_y + self._direction[1]
-    
-    def getObjects(self):
-        return self._objects
+def detect_objects(pers , map):    
+    if map[pers['x']][pers['y']] == 'j':
+        pers['potion']+=1
+    elif map[pers['x']][pers['y']] == '*':
+        pers['or']+=1
+    elif map[pers['x']][pers['y']] == '!':
+        pers['armes']+=1
 
-    def detect_objects(self,fru,object,sco):    
+#chauffe-souris=='c'
+#monstre cache == 'K'
+#creeper == 'b'
+def monstre_autour(pers , map):    
+    if map[pers['x']][pers['y']] == 'j':
         pass
 
-    def mort_perso(self,object):
-        pass
 
+def mort_perso(pers ):
+    if pers['life']<=0:
+        raise ValueError('you have been defeated')
+           
 
-#     def moves(self):
-#         for event in pg.event.get():  #renvoie none si pas event
-#             if event.type == pg.QUIT:
-#                 self._running = False
-#         # un type de pg.KEYDOWN signifie que l'on a appuye une touche du clavier
-#             elif event.type == pg.KEYDOWN:
-#             # si la touche est "Q" on veut quitter le programme
-#                 if event.key == pg.K_q:
-#                     self._running = False
-#                 if event.key == pg.K_UP:
-#                     self._direction = (0,-1)
-#                 if event.key == pg.K_DOWN:
-#                     self._direction=(0,1)
-#                 if event.key == pg.K_LEFT:
-#                     self._direction=(-1,0)
-#                 if event.key == pg.K_RIGHT:
-#                     self._direction=(1,0)
-
-
-
-
+def monstres_attaque(monstre, pers):
+    pass
 
 
 
@@ -112,22 +127,56 @@ pg.init()
 screen = pg.display.set_mode((larg_ecr, long_ecr))
 running = True
 
+# dessin des trucs
+    #dessin des murs
+
+# def draw_wall(position): #position est le couple (i,j)
+
+#         (i,j) = position
+
+        # if map_liste[i][j+1] == '-' and map_liste[i+1][j]  == '|': # coin du haut à gauche
+        #     pg.draw.rect(screen, (0,0,0), pg.Rect(i*10, j*10, width, height)) # fond case murs
+        #     pg.draw.rect(screen, (153,76,0), pg.Rect(i*(10+1/3), j*(10+1/3), width*(2/3), height/3))
+        #     pg.draw.rect(screen, (153,76,0), pg.Rect(i*(10+1/3), j*(10+1/3), width/3, height*(2/3)))
+
+        # else if map_liste[i][j-1] == '-' and map_liste[i+1][j]  == '|': # coin du haut à droite
+        #     pg.draw.rect(screen, (0,0,0), pg.Rect(i*10, j*10, width, height)) # fond case murs
+        #     pg.draw.rect(screen, (153,76,0), pg.Rect(i*10, j*(10+1/3), width*(2/3), height/3))
+        #     pg.draw.rect(screen, (153,76,0), pg.Rect(i*(10+1/3), j*(10+1/3), width/3, height*(2/3)))
+
+        # else if map_liste[i][j+1] == '-' and map_liste[i-1][j]  == '|': # coin en bas à gauche
+        # pg.draw.rect(screen, (0,0,0), pg.Rect(i*10, j*10, width, height)) # fond case murs
+        # pg.draw.rect(screen, (153,76,0), pg.Rect(i*10, j*(10+1/3), width/3, height*(2/3)))
+        # pg.draw.rect(screen, (153,76,0), pg.Rect(i*(10+1/3), j*(10+1/3), width(2/3), height/3))
+
+        # else if map_liste[i][j-1] == '-' and map_liste[i-1][j]  == '|': # coin en bas à droite
+        #     pg.draw.rect(screen, (0,0,0), pg.Rect(i*10, j*(10+1/3), width, height)) # fond case murs
+        #     pg.draw.rect(screen, (153,76,0), pg.Rect(i*10, j*(10+1/3), width/3, height*(2/3)))
+        #     pg.draw.rect(screen, (153,76,0), pg.Rect(i*(10+1/3), j*10, width*(2/3), height/3))
+
+        # else if map_liste[i][j] == '-':
+        #     pg.draw.rect(screen, (0,0,0), pg.Rect(i*10, j*10, width, height)) # fond case murs
+        #     pg.draw.rect(screen, (153,76,0), pg.Rect(i*(10+1/3), j*(10+1/3), width/3, height)) # interieur des murs (prend 1/3 des murs)
+
+        # else if map_liste[i][j] == '|':
+        #     pg.draw.rect(screen, (0,0,0), pg.Rect(i*10, j*10, width, height)) # fond case murs
+        #     pg.draw.rect(screen, (153,76,0), pg.Rect(i*(10+1/3), j*(10+1/3), width, height/3)) # interieur des murs (prend 1/3 des murs)
 
 
-# initialisation du grid
-def lecture_fichier(enter_file='map/map1.txt'):
-    '''lit le fichier et le met dans une liste '''
-    map_liste = []
-    with open(enter_file, 'r') as f : 
-        for ligne in f :
-            map_liste.append(list(ligne))
-    return map_liste
 
+
+
+
+
+
+
+
+
+################################### On initialise la map #########################################
+# Loop on all tiles
 map_list = lecture_fichier()
 
-
-# On initialise la map
-# Loop on all tiles
+perso={'x':None, 'y':None,'power':5,'life':10,'or':0,'potion':0,'armes':0}
 
 for i, row in enumerate(map_list) :
     for j, col in enumerate(row):
@@ -155,11 +204,10 @@ for i, row in enumerate(map_list) :
             pixel - 2, pixel - 2)
             pg.draw.rect(screen, (158, 253, 56), rect)
         
-        # elif col == '@':
-        #     rect = pg.Rect(j * pixel + 1,
-        #     i * pixel + 1,
-        #     pixel - 2, pixel - 2)
-        #     pg.draw.rect(screen, (253, 108, 158), rect)
+        elif col == '@':
+            perso['x'] = i
+            perso['y'] = j
+            draw_perso(perso)
 
         elif col == '=':
             rect = pg.Rect(j * pixel + 1,
@@ -167,6 +215,8 @@ for i, row in enumerate(map_list) :
             pixel - 2, pixel - 2)
             pg.draw.rect(screen, (129, 20, 83), rect)
 
+
+pg.display.update()
 
 while running:
 
@@ -179,13 +229,13 @@ while running:
             running = False
         # un type de pg.KEYDOWN signifie que l'on a appuyé une touche du clavier
         elif event.type == pg.KEYDOWN:
-            if event.type == pg.K_UP:
+            if event.key == pg.K_UP:
                 move_perso((-1,0), map_list, perso)
-            elif event.type == pg.K_DOWN:
+            elif event.key == pg.K_DOWN:
                 move_perso((1,0), map_list, perso)
-            elif event.type == pg.K_RIGHT:
+            elif event.key == pg.K_RIGHT:
                 move_perso((0,1), map_list, perso)
-            elif event.type == pg.K_LEFT:
+            elif event.key == pg.K_LEFT:
                 move_perso((0,-1), map_list, perso)
         
     pg.display.update()
