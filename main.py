@@ -19,7 +19,8 @@ def lecture_fichier(enter_file='map/map1.txt'):
 
 map_list = lecture_fichier()
 
-perso={'x':2, 'y':2,'power':5,'life':10,'or':0,'potion':0,'armes':0}
+perso={'x':2, 'y':2,'power':2,'life':10,'or':0,'potion':0,
+        'armes':0, 'shield':0}
 
         
 def detect_objects(pers = perso, map = map_list):    
@@ -29,81 +30,45 @@ def detect_objects(pers = perso, map = map_list):
         pers['or']+=1
     elif map[pers['x']][pers['y']] == '!':
         pers['armes']+=1
+    elif map[pers['x']][pers['y']] == 's':
+        pers['armures']+=1
 
 #chauffe-souris=='c'
 #monstre cache == 'K'
 #creeper == 'b'
-def monstre_autour(pers = perso, map = map_list):    
-    if map[pers['x']][pers['y']] == 'j':
+def monstre_autour(pers = perso, map = map_list):
+    dir=[(1,0),(-1,0),(0,1),(0,-1),
+        (1,1),(-1,-1),(-1,1),(1,-1)] 
+    clock = pg.time.Clock()
+        
+    for d in dir:
+        if map[pers['x']+d[0]][pers['y']+d[1]] == 'c':
+            c_life=3
+            
+            while c_life>0:
+                pers['life']+=-2
+                clock.tick(1)
+                if
+                    c_life += -pers['power']
+                
+            pers['life'] += 1
 
 
-def mort_perso(pers = perso):
-    if pers['life']<=0:
-        raise ValueError('you have been defeated')
-
-def monstres_attaque(monstre, pers)
 
 
 
 # initialisation de l'écran
 # longueur ecran
 
-larg_case = 80
-long_case = 40
-width = 40 # largeur du rectangle en pixels
+larg_case = len(map_list[0])
+long_case = len(map_list)
+
 pixel = 40 # hauteur du rectangle en pixels
 long_ecr = long_case*pixel
 larg_ecr = larg_case*pixel
 
-pg.init()
 screen = pg.display.set_mode((larg_ecr, long_ecr))
 running = True
-
-# dessin des trucs
-    #dessin des murs
-
-def draw_wall(position): #position est le couple (i,j)
-
-        (i,j) = position
-
-        if map_liste[i][j+1] == '-' and map_liste[i+1][j]  == '|': # coin du haut à gauche
-            pg.draw.rect(screen, (0,0,0), pg.Rect(i*10, j*10, width, height)) # fond case murs
-            pg.draw.rect(screen, (153,76,0), pg.Rect(i*(10+1/3), j*(10+1/3), width*(2/3), height/3))
-            pg.draw.rect(screen, (153,76,0), pg.Rect(i*(10+1/3), j*(10+1/3), width/3, height*(2/3)))
-
-        else if map_liste[i][j-1] == '-' and map_liste[i+1][j]  == '|': # coin du haut à droite
-            pg.draw.rect(screen, (0,0,0), pg.Rect(i*10, j*10, width, height)) # fond case murs
-            pg.draw.rect(screen, (153,76,0), pg.Rect(i*10, j*(10+1/3), width*(2/3), height/3))
-            pg.draw.rect(screen, (153,76,0), pg.Rect(i*(10+1/3), j*(10+1/3), width/3, height*(2/3)))
-
-        else if map_liste[i][j+1] == '-' and map_liste[i-1][j]  == '|': # coin en bas à gauche
-        pg.draw.rect(screen, (0,0,0), pg.Rect(i*10, j*10, width, height)) # fond case murs
-        pg.draw.rect(screen, (153,76,0), pg.Rect(i*10, j*(10+1/3), width/3, height*(2/3)))
-        pg.draw.rect(screen, (153,76,0), pg.Rect(i*(10+1/3), j*(10+1/3), width(2/3), height/3))
-
-        else if map_liste[i][j-1] == '-' and map_liste[i-1][j]  == '|': # coin en bas à droite
-            pg.draw.rect(screen, (0,0,0), pg.Rect(i*10, j*(10+1/3), width, height)) # fond case murs
-            pg.draw.rect(screen, (153,76,0), pg.Rect(i*10, j*(10+1/3), width/3, height*(2/3)))
-            pg.draw.rect(screen, (153,76,0), pg.Rect(i*(10+1/3), j*10, width*(2/3), height/3))
-
-        else if map_liste[i][j] == '-':
-            pg.draw.rect(screen, (0,0,0), pg.Rect(i*10, j*10, width, height)) # fond case murs
-            pg.draw.rect(screen, (153,76,0), pg.Rect(i*(10+1/3), j*(10+1/3), width/3, height)) # interieur des murs (prend 1/3 des murs)
-
-        else if map_liste[i][j] == '|':
-            pg.draw.rect(screen, (0,0,0), pg.Rect(i*10, j*10, width, height)) # fond case murs
-            pg.draw.rect(screen, (153,76,0), pg.Rect(i*(10+1/3), j*(10+1/3), width, height/3)) # interieur des murs (prend 1/3 des murs)
-
-
-
-
-rect = pg.Rect(0,0,width,height)
-pg.draw.rect(screen, (23,254,4), rect)
-
-
-
-
-
 
 # On initialise la map
 # Loop on all tiles
@@ -146,7 +111,9 @@ for i, row in enumerate(map_list) :
             pixel - 2, pixel - 2)
             pg.draw.rect(screen, (129, 20, 83), rect)
 
-
+if perso['life']<=0:
+    running = False
+    
 while running:
 
     # on itère sur tous les évênements qui ont eu lieu depuis le précédent appel
@@ -162,6 +129,6 @@ while running:
             # si la touche est "Q" on veut quitter le programme
         
     pg.display.update()
-
+raise ValueError('you have been defeated')
 
 
