@@ -8,6 +8,14 @@ from os import system
 import re
 
 
+        
+
+def move_perso(deplacement, pos_x, pos_y, map_list, pers = perso):
+    pos = (pos_x, pos_y)
+    new_pos = (pos[0] + deplacement[0], pos[1] + deplacement[1])
+    if map_list[new_pos[1], new_pos[1]] == '.' or '+' or '#':
+        pers['x'], pers['y'] = new_pos[0], new_pos[1]
+
 # pg.init()
 
 # def lecture_fichier(enter_file):
@@ -147,11 +155,11 @@ for i, row in enumerate(map_list) :
             pixel - 2, pixel - 2)
             pg.draw.rect(screen, (158, 253, 56), rect)
         
-        elif col == '@':
-            rect = pg.Rect(j * pixel + 1,
-            i * pixel + 1,
-            pixel - 2, pixel - 2)
-            pg.draw.rect(screen, (253, 108, 158), rect)
+        # elif col == '@':
+        #     rect = pg.Rect(j * pixel + 1,
+        #     i * pixel + 1,
+        #     pixel - 2, pixel - 2)
+        #     pg.draw.rect(screen, (253, 108, 158), rect)
 
         elif col == '=':
             rect = pg.Rect(j * pixel + 1,
@@ -171,8 +179,14 @@ while running:
             running = False
         # un type de pg.KEYDOWN signifie que l'on a appuyé une touche du clavier
         elif event.type == pg.KEYDOWN:
-            pass
-            # si la touche est "Q" on veut quitter le programme
+            if event.type == pg.K_UP:
+                move_perso((-1,0), map_list, perso)
+            elif event.type == pg.K_DOWN:
+                move_perso((1,0), map_list, perso)
+            elif event.type == pg.K_RIGHT:
+                move_perso((0,1), map_list, perso)
+            elif event.type == pg.K_LEFT:
+                move_perso((0,-1), map_list, perso)
         
     pg.display.update()
 
