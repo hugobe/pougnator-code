@@ -8,15 +8,15 @@ from os import system
 import re
 
 
-pg.init()
+# pg.init()
 
-def lecture_fichier(enter_file):
-    '''lit le fichier et le met dans une liste '''
-    map_liste = []
-    with open(enter_file, 'r') as f : 
-        for ligne in f :
-            map_liste.append(list(ligne.strip()))
-    return map_liste
+# def lecture_fichier(enter_file):
+#     '''lit le fichier et le met dans une liste '''
+#     map_liste = []
+#     with open(enter_file, 'r') as f : 
+#         for ligne in f :
+#             map_liste.append(list(ligne.strip()))
+#     return map_liste
 
 class Perso:
     '''
@@ -72,15 +72,17 @@ class Game:
     def __init__(self, perso, file):
         self._running = True #it will turn False if @ dies
         self._direction = None
-        self._grid = self.lecture_fichier(file)
+        self._grid = None
 
-    def lecture_fichier(enter_file='map/map1.txt'):
+    def lecture_fichier(self, enter_file='map/map1.txt'):
         '''lit le fichier et le met dans une liste '''
         map_liste = []
         with open(enter_file, 'r') as f : 
             for ligne in f :
                 map_liste.append(list(ligne.strip()))
-        return map_liste
+        self._grid = map_liste
+
+
     
     def test(self):
         return self._running
@@ -103,55 +105,56 @@ class Game:
                 if event.key == pg.K_RIGHT:
                     self._direction=(1,0)
 
-class Display: #on definit l'objet damier
+class Display: 
     class Quit(Exception):
         pass
 
-    def __init__(self, game, height=400, width=400, pixel=20):
-        self._height = height
-        self._width = width
+    def __init__(self, game, pixel=400, width=400, cell_size=20):
         self._pixel = pixel
+        self._width = width
+        pixel = cell_size
+        self._game = game
     
     def screen(self):       #creates screen with pygame
-        return pg.display.set_mode((self._width,self._height))
+        return pg.display.set_mode((self._width,self._pixel))
     
     def displayMap(self, screen):
         screen.fill(pg.Color((0,0,0)))
         # Loop on all tiles
-        for row in range(self._game.getGridY()):
-            for col in range(self._game.getGridX()):
-                if self._game.getGrid()[row][col] == '-' or self._game.getGrid()[row][col] == '|':
-                    rect = pg.Rect((col) * self._cell_size + 1,
-                    (row) * self._cell_size + 1,
-                    self._cell_size - 2, self._cell_size - 2)
+        for i, row in enumerate(self._game._grid) :
+            for j, col in enumerate(row):
+                if col == '-' or col == '|':
+                    rect = pg.Rect(j * pixel + 1,
+                    i * pixel + 1,
+                    pixel - 2, pixel - 2)
                     
                     pg.draw.rect(screen, (220, 85, 0), rect)
 
-                elif self._game.getGrid()[row][col] == '.':
-                    rect = pg.Rect((col) * self._cell_size + 1,
-                    (row) * self._cell_size + 1,
-                    self._cell_size - 2, self._cell_size - 2)
+                elif col == '.':
+                    rect = pg.Rect(j * pixel + 1,
+                    i * pixel + 1,
+                    pixel - 2, pixel - 2)
                     pg.draw.rect(screen, (199, 208, 0), rect)
                 
-                elif self._game.getGrid()[row][col] == '#':
-                    rect = pg.Rect((col) * self._cell_size + 1,
-                    (row) * self._cell_size + 1,
-                    self._cell_size - 2, self._cell_size - 2)
+                elif col == '#':
+                    rect = pg.Rect(j * pixel + 1,
+                    i * pixel + 1,
+                    pixel - 2, pixel - 2)
                     pg.draw.rect(screen, (179, 177, 145), rect)
 
-                elif self._game.getGrid()[row][col] == '+':
-                    rect = pg.Rect((col) * self._cell_size + 1,
-                    (row) * self._cell_size + 1,
-                    self._cell_size - 2, self._cell_size - 2)
+                elif col == '+':
+                    rect = pg.Rect(j * pixel + 1,
+                    i * pixel + 1,
+                    pixel - 2, pixel - 2)
                     pg.draw.rect(screen, (231, 61, 1), rect)
 
     
     def displayPerso(self, screen, perso):
         '''Paints the perso
         '''
-        rect = pg.Rect((perso.getPersoX()) * self._cell_size + 1,
-                    (perso.getPersoY()) * self._cell_size + 1,
-                    self._cell_size - 2, self._cell_size - 2)
+        rect = pg.Rect((perso.getPersoX()) * pixel + 1,
+                    (perso.getPersoY()) * pixel + 1,
+                    pixel - 2, pixel - 2)
         pg.draw.rect(screen, (252, 108, 156), rect)
 
     def _process_events(self):
@@ -190,14 +193,15 @@ class Display: #on definit l'objet damier
 
 
 #definition of the objects
-perso=Perso()
+# perso=Perso()
 
-game=Game(perso, 'map/map1.txt')
+# game=Game(perso, 'map/map1.txt')
 
-screen=Display(game).screen()
+# screen=Display(game).screen()
 
+# Display.run()
 
-pg.quit()
+#pg.quit()
 
 
 
@@ -206,18 +210,59 @@ pg.quit()
 # initialisation de l'écran
 # longueur ecran
 
-larg_case = 130
-long_case = 80
-width = 10 # largeur du rectangle en pixels
-height = 10 # hauteur du rectangle en pixels
-long_ecr = long_case*height
-larg_ecr = larg_case*height
+larg_case = 80
+long_case = 40
+width = 40 # largeur du rectangle en pixels
+pixel = 40 # hauteur du rectangle en pixels
+long_ecr = long_case*pixel
+larg_ecr = larg_case*pixel
 
 pg.init()
 screen = pg.display.set_mode((larg_ecr, long_ecr))
-
-
 running = True
+
+
+
+# initialisation du grid
+def lecture_fichier(enter_file='map/map1.txt'):
+    '''lit le fichier et le met dans une liste '''
+    map_liste = []
+    with open(enter_file, 'r') as f : 
+        for ligne in f :
+            map_liste.append(list(ligne))
+    return map_liste
+
+map_list = lecture_fichier()
+
+
+# On initialise la map
+# Loop on all tiles
+
+for i, row in enumerate(map_list) :
+    for j, col in enumerate(row):
+        if col == '-' or col == '|':
+            rect = pg.Rect(j * pixel + 1,
+            i *  pixel + 1,
+            pixel - 2, pixel - 2)
+            pg.draw.rect(screen, (220, 85, 0), rect)
+
+        elif col == '.':
+            rect = pg.Rect(j * pixel + 1,
+            i * pixel + 1,
+            pixel - 2, pixel - 2)
+            pg.draw.rect(screen, (199, 208, 0), rect)
+        
+        elif col == '#':
+            rect = pg.Rect(j * pixel + 1,
+            i * pixel + 1,
+            pixel - 2, pixel - 2)
+            pg.draw.rect(screen, (179, 177, 145), rect)
+
+        elif col == '+':
+            rect = pg.Rect(j * pixel + 1,
+            i * pixel + 1,
+            pixel - 2, pixel - 2)
+            pg.draw.rect(screen, (231, 61, 1), rect)
 
 
 while running:
