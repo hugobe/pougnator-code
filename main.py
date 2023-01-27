@@ -28,6 +28,13 @@ def lecture_fichier(enter_file='map/map1.txt'):
 
 ################### fonctions draw ###########################
 
+def draw_perso(position):
+    caillou = pg.image.load("slide1.gif")
+    ballrect = caillou.get_rect()
+    screen.blit(caillou, ballrect)
+    pg.display.flip()
+            
+
 perso={'x':2, 'y':2,'power':2,'life':10,'or':0,'potion':0,
         'armes':0, 'shield':0}
 
@@ -88,11 +95,12 @@ perso={'x':None, 'y':None,'power':5,'life':10,'or':0,'potion':0,'armes':0}
 for i, row in enumerate(map_list) :
     for j, col in enumerate(row):
         if col == '-' or col == '|':
+            #draw_wall((i,j),map_list)
             rect = pg.Rect(j * pixel + 1,
             i *  pixel + 1,
             pixel - 2, pixel - 2)
             pg.draw.rect(screen, (220, 85, 0), rect)
-
+            
         elif col == '.':
             rect = pg.Rect(j * pixel + 1,
             i * pixel + 1,
@@ -115,16 +123,28 @@ for i, row in enumerate(map_list) :
             perso['x'] = i
             perso['y'] = j
             draw_perso(perso)
+            # rect = pg.Rect(j * pixel + 1,
+            # i * pixel + 1,
+            # pixel - 2, pixel - 2)
+            # pg.draw.rect(screen, (253, 108, 158), rect)
 
         elif col == '=':
-            rect = pg.Rect(j * pixel + 1,
-            i * pixel + 1,
-            pixel - 2, pixel - 2)
-            pg.draw.rect(screen, (129, 20, 83), rect)
+            caillou = pg.image.load("slide1.gif")
+            ballrect = caillou.get_rect()
+            screen.blit(caillou, ballrect)
+            pg.display.flip()
+            
+            # rect = pg.Rect(j * pixel + 1,
+            # i * pixel + 1,
+            # pixel - 2, pixel - 2)
+            # pg.draw.rect(screen, (129, 20, 83), rect)
 
 if perso['life']<=0:
     running = False
     
+
+#josolympiques = j
+
 
 pg.display.update()
 
