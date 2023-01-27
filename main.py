@@ -65,143 +65,26 @@ class Perso:
     def mort_perso(self,object):
         pass
 
-class Game:
-    '''
-    A class to run the game
-    '''
-    def __init__(self, perso, file):
-        self._running = True #it will turn False if @ dies
-        self._direction = None
-        self._grid = None
 
-    def lecture_fichier(self, enter_file='map/map1.txt'):
-        '''lit le fichier et le met dans une liste '''
-        map_liste = []
-        with open(enter_file, 'r') as f : 
-            for ligne in f :
-                map_liste.append(list(ligne.strip()))
-        self._grid = map_liste
-
-
-    
-    def test(self):
-        return self._running
-
-    def moves(self):
-        for event in pg.event.get():  #renvoie none si pas event
-            if event.type == pg.QUIT:
-                self._running = False
-        # un type de pg.KEYDOWN signifie que l'on a appuye une touche du clavier
-            elif event.type == pg.KEYDOWN:
-            # si la touche est "Q" on veut quitter le programme
-                if event.key == pg.K_q:
-                    self._running = False
-                if event.key == pg.K_UP:
-                    self._direction = (0,-1)
-                if event.key == pg.K_DOWN:
-                    self._direction=(0,1)
-                if event.key == pg.K_LEFT:
-                    self._direction=(-1,0)
-                if event.key == pg.K_RIGHT:
-                    self._direction=(1,0)
-
-class Display: 
-    class Quit(Exception):
-        pass
-
-    def __init__(self, game, pixel=400, width=400, cell_size=20):
-        self._pixel = pixel
-        self._width = width
-        pixel = cell_size
-        self._game = game
-    
-    def screen(self):       #creates screen with pygame
-        return pg.display.set_mode((self._width,self._pixel))
-    
-    def displayMap(self, screen):
-        screen.fill(pg.Color((0,0,0)))
-        # Loop on all tiles
-        for i, row in enumerate(self._game._grid) :
-            for j, col in enumerate(row):
-                if col == '-' or col == '|':
-                    rect = pg.Rect(j * pixel + 1,
-                    i * pixel + 1,
-                    pixel - 2, pixel - 2)
-                    
-                    pg.draw.rect(screen, (220, 85, 0), rect)
-
-                elif col == '.':
-                    rect = pg.Rect(j * pixel + 1,
-                    i * pixel + 1,
-                    pixel - 2, pixel - 2)
-                    pg.draw.rect(screen, (199, 208, 0), rect)
-                
-                elif col == '#':
-                    rect = pg.Rect(j * pixel + 1,
-                    i * pixel + 1,
-                    pixel - 2, pixel - 2)
-                    pg.draw.rect(screen, (179, 177, 145), rect)
-
-                elif col == '+':
-                    rect = pg.Rect(j * pixel + 1,
-                    i * pixel + 1,
-                    pixel - 2, pixel - 2)
-                    pg.draw.rect(screen, (231, 61, 1), rect)
-
-    
-    def displayPerso(self, screen, perso):
-        '''Paints the perso
-        '''
-        rect = pg.Rect((perso.getPersoX()) * pixel + 1,
-                    (perso.getPersoY()) * pixel + 1,
-                    pixel - 2, pixel - 2)
-        pg.draw.rect(screen, (252, 108, 156), rect)
-
-    def _process_events(self):
-        """Process new events (keyboard, mouse) in order to quit."""
-        
-        for event in pg.event.get():
-            
-            # Catch selection of exit icon (Window "cross" icon)
-            if event.type == pg.QUIT:
-                raise type(self).Quit()
-
-            # Catch a key press
-            elif event.type == pg.KEYDOWN:
-                raise type(self).Quit()
-
-    def run(self):
-        
-        # Init Pygame
-        pg.init()
-        screen=self.screen()
-        try:
-            while game.test():
-                
-                self._process_events()
-
-            #self._game.next(self._ant)
-
-                self.displayMap(screen)
-                self.displayPerso(screen)
-
-            # Update the screen
-                pg.display.update()
-
-        except type(self).Quit:
-            pass
+#     def moves(self):
+#         for event in pg.event.get():  #renvoie none si pas event
+#             if event.type == pg.QUIT:
+#                 self._running = False
+#         # un type de pg.KEYDOWN signifie que l'on a appuye une touche du clavier
+#             elif event.type == pg.KEYDOWN:
+#             # si la touche est "Q" on veut quitter le programme
+#                 if event.key == pg.K_q:
+#                     self._running = False
+#                 if event.key == pg.K_UP:
+#                     self._direction = (0,-1)
+#                 if event.key == pg.K_DOWN:
+#                     self._direction=(0,1)
+#                 if event.key == pg.K_LEFT:
+#                     self._direction=(-1,0)
+#                 if event.key == pg.K_RIGHT:
+#                     self._direction=(1,0)
 
 
-#definition of the objects
-# perso=Perso()
-
-# game=Game(perso, 'map/map1.txt')
-
-# screen=Display(game).screen()
-
-# Display.run()
-
-#pg.quit()
 
 
 
@@ -262,7 +145,19 @@ for i, row in enumerate(map_list) :
             rect = pg.Rect(j * pixel + 1,
             i * pixel + 1,
             pixel - 2, pixel - 2)
-            pg.draw.rect(screen, (231, 61, 1), rect)
+            pg.draw.rect(screen, (158, 253, 56), rect)
+        
+        elif col == '@':
+            rect = pg.Rect(j * pixel + 1,
+            i * pixel + 1,
+            pixel - 2, pixel - 2)
+            pg.draw.rect(screen, (253, 108, 158), rect)
+
+        elif col == '=':
+            rect = pg.Rect(j * pixel + 1,
+            i * pixel + 1,
+            pixel - 2, pixel - 2)
+            pg.draw.rect(screen, (129, 20, 83), rect)
 
 
 while running:
