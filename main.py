@@ -10,9 +10,17 @@ import re
 
 pg.init()
 
+def lecture_fichier(enter_file):
+    '''lit le fichier et le met dans une liste '''
+    map_liste = []
+    with open(enter_file, 'r') as f : 
+        for ligne in f :
+            map_liste.append(list(ligne.strip()))
+    return map_liste
+
 class Perso:
     '''
-    A class to represent the ant
+    A class to represent the person
     '''
     def __init__(self, perso_x=0, perso_y=0, direction=(0,-1),objects={}, 
                 pdv=20, puissance=1): #initial direction UP
@@ -61,13 +69,21 @@ class Game:
     '''
     A class to run the game
     '''
-    def __init__(self, perso):
+    def __init__(self, perso, file):
         self._running = True #it will turn False if @ dies
         self._direction = None
+        self._grid = self.lecture_fichier(file)
+
+    def lecture_fichier(enter_file='map/map1.txt'):
+        '''lit le fichier et le met dans une liste '''
+        map_liste = []
+        with open(enter_file, 'r') as f : 
+            for ligne in f :
+                map_liste.append(list(ligne.strip()))
+        return map_liste
     
     def test(self):
         return self._running
-
 
     def moves(self):
         for event in pg.event.get():  #renvoie none si pas event
@@ -87,40 +103,110 @@ class Game:
                 if event.key == pg.K_RIGHT:
                     self._direction=(1,0)
 
+class Display: #on definit l'objet damier
+    class Quit(Exception):
+        pass
+
+    def __init__(self, game, height=400, width=400, pixel=20):
+        self._height = height
+        self._width = width
+        self._pixel = pixel
+    
+    def screen(self):       #creates screen with pygame
+        return pg.display.set_mode((self._width,self._height))
+    
+    def displayMap(self, screen):
+        screen.fill(pg.Color((0,0,0)))
+        # Loop on all tiles
+        for row in range(self._game.getGridY()):
+            for col in range(self._game.getGridX()):
+                if self._game.getGrid()[row][col] == '-' or self._game.getGrid()[row][col] == '|':
+                    rect = pg.Rect((col) * self._cell_size + 1,
+                    (row) * self._cell_size + 1,
+                    self._cell_size - 2, self._cell_size - 2)
+                    
+                    pg.draw.rect(screen, (220, 85, 0), rect)
+
+                elif self._game.getGrid()[row][col] == '.':
+                    rect = pg.Rect((col) * self._cell_size + 1,
+                    (row) * self._cell_size + 1,
+                    self._cell_size - 2, self._cell_size - 2)
+                    pg.draw.rect(screen, (199, 208, 0), rect)
+                
+                elif self._game.getGrid()[row][col] == '#':
+                    rect = pg.Rect((col) * self._cell_size + 1,
+                    (row) * self._cell_size + 1,
+                    self._cell_size - 2, self._cell_size - 2)
+                    pg.draw.rect(screen, (179, 177, 145), rect)
+
+                elif self._game.getGrid()[row][col] == '+':
+                    rect = pg.Rect((col) * self._cell_size + 1,
+                    (row) * self._cell_size + 1,
+                    self._cell_size - 2, self._cell_size - 2)
+                    pg.draw.rect(screen, (231, 61, 1), rect)
+
+    
+    def displayPerso(self, screen, perso):
+        '''Paints the perso
+        '''
+        rect = pg.Rect((perso.getPersoX()) * self._cell_size + 1,
+                    (perso.getPersoY()) * self._cell_size + 1,
+                    self._cell_size - 2, self._cell_size - 2)
+        pg.draw.rect(screen, (252, 108, 156), rect)
+
+    def _process_events(self):
+        """Process new events (keyboard, mouse) in order to quit."""
+        
+        for event in pg.event.get():
+            
+            # Catch selection of exit icon (Window "cross" icon)
+            if event.type == pg.QUIT:
+                raise type(self).Quit()
+
+            # Catch a key press
+            elif event.type == pg.KEYDOWN:
+                raise type(self).Quit()
+
+    def run(self):
+        
+        # Init Pygame
+        pg.init()
+        screen=self.screen()
+        try:
+            while game.test():
+                
+                self._process_events()
+
+            #self._game.next(self._ant)
+
+                self.displayMap(screen)
+                self.displayPerso(screen)
+
+            # Update the screen
+                pg.display.update()
+
+        except type(self).Quit:
+            pass
+
 
 #definition of the objects
-snake=Snake()
-fruit=Fruit()
-game=Game()
-score=Score()
-damier=Damier()
+perso=Perso()
 
-screen=damier.screen()
-clock=game.clock()
+game=Game(perso, 'map/map1.txt')
 
-while game.test(): #tant qu'on a pas de mort du serpent
+screen=Display(game).screen()
 
-    clock.tick(5) # regarde le temps entre 2 boucles et attend 1/5s sinon bloque
-  
-    damier.affiche_damier() 
-    score.displayScore()
-  
-    game.moves()
-    snake.NewDirection(game.Getdirection())
-    snake.avance_snake()  #on fait avancer le snake en rajoutant un rectangle a sa liste et enlevant le dernier
-    damier.affiche_fruit(fruit.getposition())
-    snake.manger_fruit(fruit,damier,score)
-    
-    damier.affiche_snake(snake.getliste_snake())
-    pg.display.update()
-    snake.mort_snake(game)
-    
+
 pg.quit()
-score.write_score(score)
 
-system("cat highscore.txt")
 
-if __name__=='__main__':
-    print('launched from the original file')
-else:
-    print('lauched with another file')
+
+
+
+
+
+
+
+
+
+
