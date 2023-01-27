@@ -5,6 +5,7 @@ import argparse
 import os 
 from pathlib import Path
 from os import system
+import re        
 
 pg.init()
 
@@ -17,13 +18,13 @@ def lecture_fichier(enter_file='map/map1.txt'):
             map_liste.append(list(ligne))
     return map_liste
 
-map_list = lecture_fichier()
+################### fonctions draw ###########################
 
 perso={'x':2, 'y':2,'power':2,'life':10,'or':0,'potion':0,
         'armes':0, 'shield':0}
 
         
-def detect_objects(pers = perso, map = map_list):    
+def detect_objects(pers , map):    
     if map[pers['x']][pers['y']] == 'j':
         pers['potion']+=1
     elif map[pers['x']][pers['y']] == '*':
@@ -72,6 +73,9 @@ running = True
 
 # On initialise la map
 # Loop on all tiles
+map_list = lecture_fichier()
+
+perso={'x':None, 'y':None,'power':5,'life':10,'or':0,'potion':0,'armes':0}
 
 for i, row in enumerate(map_list) :
     for j, col in enumerate(row):
@@ -100,10 +104,9 @@ for i, row in enumerate(map_list) :
             pg.draw.rect(screen, (158, 253, 56), rect)
         
         elif col == '@':
-            rect = pg.Rect(j * pixel + 1,
-            i * pixel + 1,
-            pixel - 2, pixel - 2)
-            pg.draw.rect(screen, (253, 108, 158), rect)
+            perso['x'] = i
+            perso['y'] = j
+            draw_perso(perso)
 
         elif col == '=':
             rect = pg.Rect(j * pixel + 1,
@@ -114,6 +117,9 @@ for i, row in enumerate(map_list) :
 if perso['life']<=0:
     running = False
     
+
+pg.display.update()
+
 while running:
 
     # on itère sur tous les évênements qui ont eu lieu depuis le précédent appel
@@ -125,8 +131,14 @@ while running:
             running = False
         # un type de pg.KEYDOWN signifie que l'on a appuyé une touche du clavier
         elif event.type == pg.KEYDOWN:
-            pass
-            # si la touche est "Q" on veut quitter le programme
+            if event.key == pg.K_UP:
+                move_perso((-1,0), map_list, perso)
+            elif event.key == pg.K_DOWN:
+                move_perso((1,0), map_list, perso)
+            elif event.key == pg.K_RIGHT:
+                move_perso((0,1), map_list, perso)
+            elif event.key == pg.K_LEFT:
+                move_perso((0,-1), map_list, perso)
         
     pg.display.update()
 raise ValueError('you have been defeated')
