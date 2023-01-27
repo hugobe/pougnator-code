@@ -30,6 +30,47 @@ larg_ecr = larg_case*height
 pg.init()
 screen = pg.display.set_mode((larg_ecr, long_ecr))
 
+# dessin des trucs
+    #dessin des murs
+
+def draw_wall(position): #position est le couple (i,j)
+
+        (i,j) = position
+
+        if map_liste[i][j+1] == '-' and map_liste[i+1][j]  == '|': # coin du haut à gauche
+            pg.draw.rect(screen, (0,0,0), pg.Rect(i*10, j*10, width, height)) # fond case murs
+            pg.draw.rect(screen, (153,76,0), pg.Rect(i*(10+1/3), j*(10+1/3), width*(2/3), height/3))
+            pg.draw.rect(screen, (153,76,0), pg.Rect(i*(10+1/3), j*(10+1/3), width/3, height*(2/3)))
+
+        else if map_liste[i][j-1] == '-' and map_liste[i+1][j]  == '|': # coin du haut à droite
+            pg.draw.rect(screen, (0,0,0), pg.Rect(i*10, j*10, width, height)) # fond case murs
+            pg.draw.rect(screen, (153,76,0), pg.Rect(i*10, j*(10+1/3), width*(2/3), height/3))
+            pg.draw.rect(screen, (153,76,0), pg.Rect(i*(10+1/3), j*(10+1/3), width/3, height*(2/3)))
+
+        else if map_liste[i][j+1] == '-' and map_liste[i-1][j]  == '|': # coin en bas à gauche
+        pg.draw.rect(screen, (0,0,0), pg.Rect(i*10, j*10, width, height)) # fond case murs
+        pg.draw.rect(screen, (153,76,0), pg.Rect(i*10, j*(10+1/3), width/3, height*(2/3)))
+        pg.draw.rect(screen, (153,76,0), pg.Rect(i*(10+1/3), j*(10+1/3), width(2/3), height/3))
+
+        else if map_liste[i][j-1] == '-' and map_liste[i-1][j]  == '|': # coin en bas à droite
+            pg.draw.rect(screen, (0,0,0), pg.Rect(i*10, j*(10+1/3), width, height)) # fond case murs
+            pg.draw.rect(screen, (153,76,0), pg.Rect(i*10, j*(10+1/3), width/3, height*(2/3)))
+            pg.draw.rect(screen, (153,76,0), pg.Rect(i*(10+1/3), j*10, width*(2/3), height/3))
+
+        else if map_liste[i][j] == '-':
+            pg.draw.rect(screen, (0,0,0), pg.Rect(i*10, j*10, width, height)) # fond case murs
+            pg.draw.rect(screen, (153,76,0), pg.Rect(i*(10+1/3), j*(10+1/3), width/3, height)) # interieur des murs (prend 1/3 des murs)
+
+        else if map_liste[i][j] == '|':
+            pg.draw.rect(screen, (0,0,0), pg.Rect(i*10, j*10, width, height)) # fond case murs
+            pg.draw.rect(screen, (153,76,0), pg.Rect(i*(10+1/3), j*(10+1/3), width, height/3)) # interieur des murs (prend 1/3 des murs)
+
+
+
+
+rect = pg.Rect(0,0,width,height)
+pg.draw.rect(screen, (23,254,4), rect)
+
 
 running = True
 
