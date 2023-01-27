@@ -33,6 +33,14 @@ def lecture_fichier(enter_file='map/map1.txt'):
     with open(enter_file, 'r') as f : 
         for ligne in f :
             map_liste.append(list(ligne))
+    maximum = 0
+    for ligne in map_liste:
+        if len(ligne) > maximum:
+            maximum = len(ligne)
+    for i,ligne in enumerate(map_liste):
+        if len(ligne) < maximum:
+            for k in range(maximum-len(ligne)):
+                map_liste[i].append(' ')
     return map_liste
 
 ################### fonctions draw ###########################
