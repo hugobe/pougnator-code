@@ -201,10 +201,15 @@ for i, row in enumerate(map_list) :
             # pg.draw.rect(screen, (253, 108, 158), rect)
 
         elif col == '=':
-            rect = pg.Rect(j * pixel + 1,
-            i * pixel + 1,
-            pixel - 2, pixel - 2)
-            pg.draw.rect(screen, (129, 20, 83), rect)
+            caillou = pg.image.load("slide1.gif")
+            ballrect = caillou.get_rect()
+            screen.blit(caillou, ballrect)
+            pg.display.flip()
+            
+            # rect = pg.Rect(j * pixel + 1,
+            # i * pixel + 1,
+            # pixel - 2, pixel - 2)
+            # pg.draw.rect(screen, (129, 20, 83), rect)
 
 
 while running:
